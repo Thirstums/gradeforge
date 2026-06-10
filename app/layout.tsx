@@ -21,9 +21,9 @@ const mono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "rechenschaft · grades that show their work",
+  title: "GradeForge · grades that show their work",
   description:
-    "A Swiss grade calculator that prints the formula, the inputs, and the rounding rule behind every average. No accounts, no upload — everything stays in your browser.",
+    "A grade calculator that prints the formula, the inputs, and the rounding rule behind every average, for any country's grading system. No accounts, no upload — everything stays in your browser.",
 };
 
 export default function RootLayout({

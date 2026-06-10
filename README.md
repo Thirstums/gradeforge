@@ -3,7 +3,7 @@
 > A local-only grade calculator that prints the exact formula behind every number, for any country's grading system.
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript&logoColor=white)
-![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=nextdotjs&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs&logoColor=white)
 
 GradeForge is a browser-only weighted-average calculator that shows its work. Enter your grades, pick a system, and for every average it prints the inputs, the formula, and the rounding rule it applied — no accounts, no portal, nothing leaving the page. It ships with ~20 country presets and a custom-scale builder, so it handles count-up scales (Switzerland 1–6, France 0–20), count-down scales (Germany and Austria, where 1 is best and 4 still passes), and letter or GPA scales (US/Canada, Denmark's 7-trin), each with its own bounds, pass mark, decimals, and localized verdict word.
 

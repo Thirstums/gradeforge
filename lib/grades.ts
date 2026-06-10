@@ -1,4 +1,4 @@
-// rechenschaft — the engine.
+// GradeForge — the engine.
 //
 // Every public function returns a `Reckoning`: not just a number, but the
 // ordered steps that produced it, with the real values substituted in. The UI
