@@ -24,17 +24,17 @@ export function QuickView({
   actions: Pick<Actions, "addQuick" | "editQuick" | "removeQuick">;
 }) {
   return (
-    <section className="rounded-xl border bg-card px-5 py-5" style={{ borderColor: "var(--line)" }}>
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <section className="border-y border-[var(--rule)] bg-[var(--paper-2)] px-4 py-5 sm:px-5">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>Average</p>
-          <p className="mt-0.5 text-sm" style={{ color: "var(--muted)" }}>a flat list of grades — weight any that count more</p>
+          <p className="kicker">Average</p>
+          <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>a flat list of grades — weight any that count more</p>
         </div>
         <ResultFigure r={result} sys={sys} dp={dp} />
       </div>
       <Receipt r={result} show={showWork} dp={dp} />
 
-      <div className="mt-4 space-y-1.5">
+      <div className="mt-5 space-y-2">
         {grades.map((g) => (
           <GradeRow
             key={g.id}
@@ -45,7 +45,7 @@ export function QuickView({
           />
         ))}
       </div>
-      <button onClick={actions.addQuick} className="mt-2.5 text-sm font-medium" style={{ color: "var(--forge)" }}>+ exam</button>
+      <button onClick={actions.addQuick} className="mono mt-3 text-[0.72rem] font-medium uppercase tracking-[0.08em] text-[var(--red)]" type="button">+ exam</button>
     </section>
   );
 }

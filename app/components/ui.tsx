@@ -8,7 +8,7 @@ import type { GradingSystem } from "@/lib/systems";
 import type { Grade } from "@/lib/model";
 
 export function field(extra = "") {
-  return "rounded-md border bg-transparent px-2 py-1 text-sm outline-none transition-colors focus:border-[var(--forge)] " + extra;
+  return "border border-[var(--rule-strong)] bg-[var(--paper)] px-2.5 py-1.5 text-sm outline-none transition-colors placeholder:text-[var(--meta)] focus:border-[var(--red)] " + extra;
 }
 
 export function gradeColor(value: number, ok: boolean | null) {
@@ -20,9 +20,10 @@ export function Verdict({ r, sys }: { r: Reckoning; sys: GradingSystem }) {
   if (r.ok === null) return null;
   return (
     <span
-      className="tnum inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[0.72rem] font-medium"
+      className="mono tnum inline-flex items-center gap-1.5 border px-2 py-0.5 text-[0.64rem] font-medium uppercase tracking-[0.1em]"
       style={{
         color: r.ok ? "var(--ok)" : "var(--no)",
+        borderColor: r.ok ? "rgba(47,125,87,0.35)" : "rgba(178,59,46,0.35)",
         background: r.ok ? "rgba(47,125,87,0.10)" : "var(--forge-soft)",
       }}
     >
@@ -35,8 +36,8 @@ export function Verdict({ r, sys }: { r: Reckoning; sys: GradingSystem }) {
 // The big number plus its pass/fail pill.
 export function ResultFigure({ r, sys, dp, size = "text-5xl" }: { r: Reckoning; sys: GradingSystem; dp: number; size?: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className={`tnum font-display ${size} font-bold leading-none`} style={{ color: gradeColor(r.value, r.ok) }}>
+    <div className="flex flex-wrap items-center gap-3">
+      <span className={`tnum slab ${size} font-bold leading-none`} style={{ color: gradeColor(r.value, r.ok) }}>
         {isFinite(r.value) ? fmt(r.value, dp) : "—"}
       </span>
       <Verdict r={r} sys={sys} />
@@ -47,8 +48,8 @@ export function ResultFigure({ r, sys, dp, size = "text-5xl" }: { r: Reckoning; 
 export function Receipt({ r, show, dp }: { r: Reckoning; show: boolean; dp: number }) {
   if (!show || r.steps.length === 0) return null;
   return (
-    <div className="mt-3 overflow-x-auto pl-3 text-[0.82rem]" style={{ borderLeft: "2px solid var(--forge)" }}>
-      <table className="font-mono w-full border-collapse">
+    <div className="mt-4 overflow-x-auto border-l-2 border-[var(--red)] bg-[var(--paper-2)] px-3 py-2 text-[0.82rem]">
+      <table className="mono w-full border-collapse">
         <tbody>
           {r.steps.map((s, i) => (
             <tr key={i} className="align-baseline">
@@ -62,7 +63,7 @@ export function Receipt({ r, show, dp }: { r: Reckoning; show: boolean; dp: numb
         </tbody>
       </table>
       {r.raw !== null && r.value !== r.raw && (
-        <p className="tnum font-mono mt-1 text-[0.78rem]" style={{ color: "var(--muted)" }}>
+        <p className="mono tnum mt-1 text-[0.78rem]" style={{ color: "var(--muted)" }}>
           exact {fmt(r.raw)} → {fmt(r.value, dp)}
         </p>
       )}
@@ -108,12 +109,12 @@ export function GradeRow({ sys, grade, onEdit, onRemove }: {
   onRemove: () => void;
 }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="grid grid-cols-[minmax(0,1fr)_auto_auto_auto_auto] items-center gap-2">
       <input value={grade.label} onChange={(e) => onEdit({ label: e.target.value })} placeholder="Exam" aria-label="Grade label" className={"min-w-0 flex-1 " + field()} style={{ borderColor: "var(--line)" }} />
       <GradeValue sys={sys} value={grade.value} onChange={(v) => onEdit({ value: v })} />
       <span className="text-xs" style={{ color: "var(--muted)" }}>×</span>
       <input value={grade.weight} onChange={(e) => onEdit({ weight: e.target.value })} placeholder="1" inputMode="decimal" aria-label="Grade weight" className={"tnum w-12 text-center " + field()} style={{ borderColor: "var(--line)" }} />
-      <button onClick={onRemove} aria-label="Remove grade" className="px-1 text-base leading-none" style={{ color: "var(--muted)", opacity: 1 }}>×</button>
+      <button onClick={onRemove} aria-label="Remove grade" className="px-1 text-base leading-none transition hover:text-[var(--red)]" style={{ color: "var(--muted)", opacity: 1 }} type="button">×</button>
     </div>
   );
 }

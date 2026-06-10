@@ -34,27 +34,27 @@ export function Controls({
   onShowWork: (v: boolean) => void;
 }) {
   return (
-    <section className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-3 rounded-lg border bg-card px-4 py-3" style={{ borderColor: "var(--line)" }}>
+    <section className="mb-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-y border-[var(--rule)] bg-[var(--paper-2)] px-4 py-4 sm:px-5">
       <button
         onClick={onChangeSystem}
-        className="flex items-center gap-2 rounded-md border px-2.5 py-1 text-sm transition-colors hover:bg-paper"
-        style={{ borderColor: "var(--line)" }}
+        className="mono flex items-center gap-2 border border-[var(--ink)] bg-[var(--ink)] px-3 py-2 text-[0.74rem] uppercase tracking-[0.08em] text-[var(--paper)] transition hover:border-[var(--red)] hover:bg-[var(--red)]"
         title="Change grading system"
+        type="button"
       >
         <span aria-hidden>{sys.flag}</span>
-        <span className="font-medium">{sys.name}</span>
-        <span style={{ color: "var(--muted)" }}>change</span>
+        <span>{sys.name}</span>
       </button>
 
-      <div className="flex overflow-hidden rounded-md border" style={{ borderColor: "var(--line)" }} role="group" aria-label="View">
+      <div className="flex border border-[var(--rule-strong)]" role="group" aria-label="View">
         {(["subjects", "quick"] as const).map((v) => {
           const active = view === v;
           return (
             <button
               key={v}
               onClick={() => onView(v)}
-              className="px-3 py-1 text-sm font-medium transition-colors"
-              style={{ background: active ? "var(--forge)" : "transparent", color: active ? "#fff" : "var(--ink)" }}
+              className="mono border-r border-[var(--rule-strong)] px-3 py-2 text-[0.7rem] font-medium uppercase tracking-[0.08em] transition-colors last:border-r-0"
+              style={{ background: active ? "var(--red)" : "transparent", color: active ? "var(--paper)" : "var(--ink)" }}
+              type="button"
             >
               {v === "quick" ? "quick average" : "subjects"}
             </button>
@@ -63,12 +63,19 @@ export function Controls({
       </div>
 
       <div className="flex items-center gap-2">
-        <span className="text-sm" style={{ color: "var(--muted)" }}>round</span>
-        <div className="flex overflow-hidden rounded-md border" style={{ borderColor: "var(--line)" }} role="group" aria-label="Rounding rule">
+        <span className="mono text-[0.66rem] uppercase tracking-[0.14em]" style={{ color: "var(--meta)" }}>round</span>
+        <div className="flex flex-wrap border border-[var(--rule-strong)]" role="group" aria-label="Rounding rule">
           {roundingChoices.map((r) => {
             const active = rounding === r.id;
             return (
-              <button key={r.id} onClick={() => onRounding(r.id)} title={r.hint} className="tnum px-2 py-1 text-sm font-medium transition-colors" style={{ background: active ? "var(--forge)" : "transparent", color: active ? "#fff" : "var(--ink)" }}>
+              <button
+                key={r.id}
+                onClick={() => onRounding(r.id)}
+                title={r.hint}
+                className="mono tnum border-r border-[var(--rule-strong)] px-2.5 py-2 text-[0.7rem] font-medium uppercase tracking-[0.06em] transition-colors last:border-r-0"
+                style={{ background: active ? "var(--red)" : "transparent", color: active ? "var(--paper)" : "var(--ink)" }}
+                type="button"
+              >
                 {r.label}
               </button>
             );
@@ -76,7 +83,7 @@ export function Controls({
         </div>
       </div>
 
-      <label className="flex cursor-pointer items-center gap-2 text-sm">
+      <label className="mono flex cursor-pointer items-center gap-2 text-[0.7rem] uppercase tracking-[0.08em]">
         <input type="checkbox" checked={showWork} onChange={(e) => onShowWork(e.target.checked)} className="h-4 w-4 accent-[var(--forge)]" />
         <span style={{ color: "var(--muted)" }}>show work</span>
       </label>
