@@ -33,21 +33,22 @@ export function Picker({
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto p-4 sm:p-8"
-      style={{ background: "rgba(28,26,23,0.45)" }}
+      style={{ background: "rgba(28,28,28,0.48)" }}
       onKeyDown={(e) => {
         if (e.key === "Escape" && !mustChoose) onClose();
       }}
     >
-      <div className="w-full max-w-lg rounded-2xl border bg-paper p-5 shadow-xl" style={{ borderColor: "var(--line)" }}>
+      <div className="w-full max-w-2xl border border-[var(--rule-strong)] bg-[var(--paper)] p-5 shadow-xl sm:p-6">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h2 className="font-display text-xl font-bold">Choose your grading system</h2>
+            <p className="kicker">Scale</p>
+            <h2 className="mt-2 text-2xl leading-tight">Choose your grading system</h2>
             <p className="mt-1 text-sm" style={{ color: "var(--muted)" }}>
               Pick the scale your school uses. You can change it later, and build a custom one if yours isn&apos;t here.
             </p>
           </div>
           {!mustChoose && (
-            <button onClick={onClose} aria-label="Close" className="text-2xl leading-none" style={{ color: "var(--muted)" }}>×</button>
+            <button onClick={onClose} aria-label="Close" className="text-2xl leading-none transition hover:text-[var(--red)]" style={{ color: "var(--muted)" }} type="button">×</button>
           )}
         </div>
 
@@ -61,19 +62,20 @@ export function Picker({
           autoFocus
         />
 
-        <div className="mt-3 max-h-[44vh] space-y-1 overflow-y-auto pr-1">
+        <div className="mt-4 max-h-[44vh] overflow-y-auto border-y border-[var(--rule)]">
           {list.map((s) => (
             <button
               key={s.id}
               onClick={() => onChoose(s)}
-              className="flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2 text-left transition-colors hover:border-[var(--line)] hover:bg-card"
+              className="flex w-full items-center gap-3 border-t border-[var(--rule)] px-3 py-2 text-left transition-colors first:border-t-0 hover:bg-[var(--red-tint)]"
+              type="button"
             >
               <span className="text-xl" aria-hidden>{s.flag}</span>
               <span className="min-w-0 flex-1">
                 <span className="block font-medium">{s.name}</span>
                 <span className="block text-xs" style={{ color: "var(--muted)" }}>{s.country} · {s.note}</span>
               </span>
-              <span className="tnum rounded-full border px-2 py-0.5 text-xs" style={{ borderColor: "var(--line)", color: "var(--muted)" }}>{s.short}</span>
+              <span className="mono tnum border border-[var(--rule)] px-2 py-0.5 text-[0.64rem] uppercase tracking-[0.08em] text-[var(--meta)]">{s.short}</span>
             </button>
           ))}
           {list.length === 0 && (
@@ -83,15 +85,15 @@ export function Picker({
           )}
         </div>
 
-        <div className="mt-4 border-t pt-4" style={{ borderColor: "var(--line)" }}>
-          <button onClick={() => setShowCustom((v) => !v)} className="text-sm font-medium" style={{ color: "var(--forge)" }}>
+        <div className="mt-4 border-t border-[var(--rule)] pt-4">
+          <button onClick={() => setShowCustom((v) => !v)} className="mono text-[0.72rem] font-medium uppercase tracking-[0.08em] text-[var(--red)]" type="button">
             {showCustom ? "− Hide custom scale" : "+ Build a custom scale"}
           </button>
 
           {showCustom && (
-            <div className="mt-3 space-y-3">
+            <div className="mt-3 space-y-3 border border-[var(--rule-strong)] bg-[var(--paper-2)] p-4">
               <input value={c.name} onChange={(e) => setC({ ...c, name: e.target.value })} placeholder="Name (e.g. My uni's scale)" className={"w-full " + field()} style={{ borderColor: "var(--line)" }} />
-              <div className="flex flex-wrap items-end gap-3 text-xs" style={{ color: "var(--muted)" }}>
+              <div className="mono flex flex-wrap items-end gap-3 text-[0.66rem] uppercase tracking-[0.1em]" style={{ color: "var(--meta)" }}>
                 <label>worst<input value={c.min} onChange={(e) => setC({ ...c, min: e.target.value })} inputMode="decimal" className={"tnum mt-1 block w-20 text-center " + field()} style={{ borderColor: "var(--line)" }} /></label>
                 <label>best<input value={c.max} onChange={(e) => setC({ ...c, max: e.target.value })} inputMode="decimal" className={"tnum mt-1 block w-20 text-center " + field()} style={{ borderColor: "var(--line)" }} /></label>
                 <label>pass mark<input value={c.pass} onChange={(e) => setC({ ...c, pass: e.target.value })} inputMode="decimal" className={"tnum mt-1 block w-20 text-center " + field()} style={{ borderColor: "var(--line)" }} /></label>
@@ -102,12 +104,13 @@ export function Picker({
                   <button
                     key={d}
                     onClick={() => setC({ ...c, direction: d })}
-                    className="rounded-md border px-2.5 py-1 font-medium"
+                    className="mono border px-2.5 py-1.5 text-[0.68rem] font-medium uppercase tracking-[0.08em]"
                     style={{
                       borderColor: "var(--line)",
-                      background: c.direction === d ? "var(--forge)" : "transparent",
-                      color: c.direction === d ? "#fff" : "var(--ink)",
+                      background: c.direction === d ? "var(--red)" : "transparent",
+                      color: c.direction === d ? "var(--paper)" : "var(--ink)",
                     }}
+                    type="button"
                   >
                     {d === "up" ? "higher number" : "lower number"}
                   </button>
@@ -118,8 +121,8 @@ export function Picker({
                   const built = customFromForm(c);
                   if (built) onChoose(built);
                 }}
-                className="rounded-md px-3 py-1.5 text-sm font-medium text-white"
-                style={{ background: "var(--forge)" }}
+                className="mono border border-[var(--ink)] bg-[var(--ink)] px-4 py-2 text-[0.74rem] font-medium uppercase tracking-[0.08em] text-[var(--paper)] transition hover:border-[var(--red)] hover:bg-[var(--red)]"
+                type="button"
               >
                 Use this scale
               </button>

@@ -3,11 +3,11 @@
 // The subjects view: the overall average card plus one card per subject.
 // Results arrive precomputed; this file only lays them out.
 
-import { fmt, type Reckoning } from "@/lib/grades";
+import type { Reckoning } from "@/lib/grades";
 import type { GradingSystem } from "@/lib/systems";
 import type { Subject } from "@/lib/model";
 import type { Actions } from "../useGradeForge";
-import { field, gradeColor, GradeRow, Receipt, ResultFigure, Verdict } from "./ui";
+import { field, GradeRow, Receipt, ResultFigure } from "./ui";
 
 export function SubjectsView({
   sys,
@@ -28,11 +28,11 @@ export function SubjectsView({
 }) {
   return (
     <>
-      <section className="mb-9 rounded-xl border bg-card px-5 py-5" style={{ borderColor: "var(--line)" }}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="mb-8 border-y border-[var(--rule)] bg-[var(--paper-2)] px-4 py-5 sm:px-5">
+        <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.14em]" style={{ color: "var(--muted)" }}>Overall average</p>
-            <p className="mt-0.5 text-sm" style={{ color: "var(--muted)" }}>
+            <p className="kicker">Overall average</p>
+            <p className="mt-2 text-sm" style={{ color: "var(--muted)" }}>
               weighted mean of the {subjects.length} subject grade{subjects.length === 1 ? "" : "s"}
             </p>
           </div>
@@ -41,51 +41,75 @@ export function SubjectsView({
         <Receipt r={overall} show={showWork} dp={dp} />
       </section>
 
-      <div className="space-y-5">
+      <div className="border-y border-[var(--rule)]">
         {subjects.map((sub, i) => {
           const res = results[i];
           return (
-            <section key={sub.id} className="rounded-xl border bg-card px-5 py-4" style={{ borderColor: "var(--line)" }}>
-              <div className="flex flex-wrap items-center gap-3">
-                <input
-                  value={sub.name}
-                  onChange={(e) => actions.editSubject(sub.id, { name: e.target.value })}
-                  placeholder="Subject"
-                  aria-label="Subject name"
-                  className="font-display min-w-0 flex-1 bg-transparent text-lg font-medium outline-none placeholder:opacity-40 focus:border-b"
-                  style={{ borderColor: "var(--forge)" }}
-                />
-                <label className="flex items-center gap-1.5 text-xs" style={{ color: "var(--muted)" }}>
-                  weight
-                  <input value={sub.weight} onChange={(e) => actions.editSubject(sub.id, { weight: e.target.value })} inputMode="decimal" aria-label="Subject weight" className={"tnum w-12 text-center " + field()} style={{ borderColor: "var(--line)" }} />
-                </label>
-                <span className="tnum font-display text-2xl font-bold" style={{ color: gradeColor(res.value, res.ok) }}>
-                  {isFinite(res.value) ? fmt(res.value, dp) : "—"}
-                </span>
-                <Verdict r={res} sys={sys} />
-                <button onClick={() => actions.removeSubject(sub.id)} aria-label="Remove subject" className="text-lg leading-none" style={{ color: "var(--muted)", opacity: 1 }}>×</button>
-              </div>
+            <section key={sub.id} className="group relative border-t border-[var(--rule)] px-1 py-6 transition first:border-t-0 hover:bg-[var(--red-tint)] sm:px-3">
+              <div
+                aria-hidden="true"
+                className="absolute bottom-[-1px] left-0 top-[-1px] w-0 bg-[var(--red)] transition-all group-hover:w-[3px]"
+              />
 
-              <div className="mt-3 space-y-1.5">
-                {sub.grades.map((g) => (
-                  <GradeRow
-                    key={g.id}
-                    sys={sys}
-                    grade={g}
-                    onEdit={(p) => actions.editGrade(sub.id, g.id, p)}
-                    onRemove={() => actions.removeGrade(sub.id, g.id)}
-                  />
-                ))}
-              </div>
+              <div className="relative min-w-0 space-y-4">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_12rem] lg:items-start">
+                  <div className="flex min-w-0 gap-4">
+                    <p className="slab shrink-0 text-[1.7rem] font-bold leading-none text-[var(--red)]">
+                      {String(i + 1).padStart(2, "0")}
+                    </p>
+                    <div className="min-w-0 flex-1">
+                      <input
+                        value={sub.name}
+                        onChange={(e) => actions.editSubject(sub.id, { name: e.target.value })}
+                        placeholder="Subject"
+                        aria-label="Subject name"
+                        className="slab w-full border-b border-transparent bg-transparent pb-1 text-[clamp(1.45rem,3vw,2rem)] font-bold leading-tight text-[var(--ink)] outline-none transition placeholder:text-[var(--meta)] focus:border-[var(--red)]"
+                      />
+                      <label className="mono mt-3 flex w-fit items-center gap-2 text-[0.66rem] uppercase tracking-[0.14em]" style={{ color: "var(--meta)" }}>
+                        weight
+                        <input value={sub.weight} onChange={(e) => actions.editSubject(sub.id, { weight: e.target.value })} inputMode="decimal" aria-label="Subject weight" className={"tnum w-14 text-center " + field()} style={{ borderColor: "var(--line)" }} />
+                      </label>
+                    </div>
+                  </div>
 
-              <button onClick={() => actions.addGrade(sub.id)} className="mt-2.5 text-sm font-medium" style={{ color: "var(--forge)" }}>+ exam</button>
-              <Receipt r={res} show={showWork} dp={dp} />
+                  <div className="border-l-2 border-[var(--red)] pl-3 lg:text-right">
+                    <p className="mono text-[0.64rem] uppercase tracking-[0.14em] text-[var(--meta)]">
+                      Average
+                    </p>
+                    <div className="mt-1 flex lg:justify-end">
+                      <ResultFigure r={res} sys={sys} dp={dp} size="text-3xl" />
+                    </div>
+                    <button onClick={() => actions.removeSubject(sub.id)} aria-label="Remove subject" className="mono mt-2 text-[0.66rem] uppercase tracking-[0.12em] text-[var(--muted)] transition hover:text-[var(--red)]" type="button">Remove</button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {sub.grades.map((g) => (
+                    <GradeRow
+                      key={g.id}
+                      sys={sys}
+                      grade={g}
+                      onEdit={(p) => actions.editGrade(sub.id, g.id, p)}
+                      onRemove={() => actions.removeGrade(sub.id, g.id)}
+                    />
+                  ))}
+                </div>
+
+                <button onClick={() => actions.addGrade(sub.id)} className="mono text-[0.72rem] font-medium uppercase tracking-[0.08em] text-[var(--red)]" type="button">+ exam</button>
+                <Receipt r={res} show={showWork} dp={dp} />
+              </div>
             </section>
           );
         })}
       </div>
 
-      <button onClick={actions.addSubject} className="mt-5 w-full rounded-xl border border-dashed py-3 text-sm font-medium transition-colors hover:bg-card" style={{ borderColor: "var(--line)", color: "var(--forge)" }}>+ subject</button>
+      <button
+        onClick={actions.addSubject}
+        className="mono mt-5 w-full border border-dashed border-[var(--rule-strong)] py-3 text-[0.74rem] font-medium uppercase tracking-[0.08em] text-[var(--red)] transition hover:border-[var(--red)] hover:bg-[var(--red-tint)]"
+        type="button"
+      >
+        + subject
+      </button>
     </>
   );
 }
