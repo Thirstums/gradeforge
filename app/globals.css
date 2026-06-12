@@ -95,7 +95,7 @@ h3 {
   color: var(--ink);
   font-family: var(--font-zilla-slab), Georgia, serif;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   margin: 0;
 }
 
@@ -112,11 +112,13 @@ h3 {
 
 .slab {
   font-family: var(--font-zilla-slab), Georgia, serif;
+  letter-spacing: 0;
 }
 
 .mono {
   font-family: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo,
     monospace;
+  letter-spacing: 0;
 }
 
 .kicker {
@@ -129,7 +131,7 @@ h3 {
   font-size: 0.7rem;
   font-weight: 600;
   gap: 0.35rem 0.6rem;
-  letter-spacing: 0.18em;
+  letter-spacing: 0;
   text-transform: uppercase;
 }
 
@@ -138,6 +140,25 @@ h3 {
   content: "";
   flex: 0 0 1.6rem;
   height: 2px;
+}
+
+.label {
+  color: var(--meta);
+  display: block;
+  font-family: var(--font-ibm-plex-mono), ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  text-transform: uppercase;
+}
+
+.result-decimal {
+  background: currentColor;
+  display: inline-block;
+  height: 0.12em;
+  margin: 0 0.09em 0.08em;
+  width: 0.12em;
 }
 
 /* Quiet, consistent inputs. */

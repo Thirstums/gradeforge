@@ -12,13 +12,11 @@ import { CUSTOM_ID } from "@/lib/systems";
 import {
   STORAGE_KEY,
   initialState,
-  freshState,
   currentSystem,
   derive,
   blankGrade,
   blankSubject,
   type State,
-  type View,
   type Grade,
   type Subject,
   type Conv,
@@ -32,7 +30,14 @@ export function useGradeForge() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) setState(JSON.parse(saved));
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<State>;
+        setState({
+          ...initialState,
+          ...parsed,
+          conv: { ...initialState.conv, ...parsed.conv },
+        });
+      }
     } catch {
       /* keep the seed if storage is unavailable or corrupt */
     }
@@ -55,24 +60,25 @@ export function useGradeForge() {
     const patch = (p: Partial<State>) => setState((s) => ({ ...s, ...p }));
     const mapSubjects = (fn: (subs: Subject[]) => Subject[]) =>
       setState((s) => ({ ...s, subjects: fn(s.subjects) }));
-    const mapQuick = (fn: (g: Grade[]) => Grade[]) =>
-      setState((s) => ({ ...s, quick: fn(s.quick) }));
 
     return {
       chooseSystem(next: GradingSystem) {
         setState((s) => {
-          const base = { ...s, systemId: next.id, custom: next.id === CUSTOM_ID ? next : null, chosen: true };
-          // First choice replaces the seed data; later changes keep the user's grades.
-          return s.chosen ? { ...base, rounding: next.rounding } : { ...base, ...freshState(next) };
+          const nextMax = next.kind === "numeric" ? Math.round(next.max) : 30;
+          return {
+            ...s,
+            systemId: next.id,
+            custom: next.id === CUSTOM_ID ? next : null,
+            rounding: next.rounding,
+            conv: { ...s.conv, max: String(nextMax) },
+          };
         });
         setPickerOpen(false);
       },
       openPicker: () => setPickerOpen(true),
       closePicker: () => setPickerOpen(false),
 
-      setView: (view: View) => patch({ view }),
       setRounding: (rounding: Rounding) => patch({ rounding }),
-      setShowWork: (showWork: boolean) => patch({ showWork }),
       setConv: (p: Partial<Conv>) => setState((s) => ({ ...s, conv: { ...s.conv, ...p } })),
 
       addSubject: () => mapSubjects((subs) => [...subs, blankSubject()]),
@@ -92,11 +98,6 @@ export function useGradeForge() {
           subs.map((s) => (s.id === sid ? { ...s, grades: s.grades.filter((g) => g.id !== gid) } : s))
         ),
 
-      addQuick: () => mapQuick((q) => [...q, blankGrade()]),
-      editQuick: (id: string, p: Partial<Grade>) =>
-        mapQuick((q) => q.map((g) => (g.id === id ? { ...g, ...p } : g))),
-      removeQuick: (id: string) => mapQuick((q) => q.filter((g) => g.id !== id)),
-
       reset: () => {
         setState(initialState);
         setPickerOpen(false);
@@ -107,16 +108,12 @@ export function useGradeForge() {
   return {
     sys,
     dp: sys.decimals,
-    view: state.view,
     rounding: state.rounding,
-    showWork: state.showWork,
     subjects: state.subjects,
-    quick: state.quick,
     conv: state.conv,
     ...results,
     picker: {
-      open: pickerOpen || (loaded && !state.chosen),
-      mustChoose: loaded && !state.chosen,
+      open: pickerOpen,
     },
     actions,
   };

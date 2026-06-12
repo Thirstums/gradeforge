@@ -1,6 +1,9 @@
 # GradeForge
 
-> A local-only grade calculator that prints the exact formula behind every number, for any country's grading system.
+GradeForge is a local-only grade calculator. Pick a grading scale, enter
+subjects and grades, and get the weighted average. Calculation details are
+available when you want to check the math, but they stay out of the way by
+default.
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue?logo=typescript&logoColor=white)
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs&logoColor=white)
@@ -23,21 +26,23 @@ npm run dev
 
 Open http://localhost:3000. On first launch a selection screen blocks until you pick a grading system; your choice persists in the browser and seeds a small set of example grades. Everything runs client-side; there is no server or database, and no data ever leaves your browser.
 
-### Grading systems
+## What It Does
 
-Each system is one entry in `lib/systems.ts` that the engine and UI pick up with no other changes. A system defines:
+- Saves state in the browser only.
+- Supports preset grading systems in `lib/systems.ts`.
+- Supports custom numeric scales from the scale picker.
+- Handles count-up and count-down systems correctly.
+- Averages letter/GPA-style scales by their numeric values.
+- Includes an optional points-to-grade converter.
 
-| Field | Purpose |
-| --- | --- |
-| `bounds` | Worst and best grade on the scale |
-| `direction` | Whether higher or lower is better (sets how "pass" is compared) |
-| `pass` | The pass mark |
-| `decimals` | Display precision |
-| `rounding` | Rounding mode, e.g. nearest `0.1` or GPA's `0.01` |
-| `labels` | Localized verdict words (genügend / bestanden / suffisant / aprobado …) |
-| `letters` | Optional letter↔value map for GPA-style scales |
+## Project Shape
 
-Adding a country is a single line in this file. Anything not listed is covered by the **custom scale** builder (worst / best / pass mark / higher-or-lower-is-better).
+- `lib/grades.ts` is the tested math engine.
+- `lib/systems.ts` lists the grading systems.
+- `lib/model.ts` turns app state into computed results.
+- `app/useGradeForge.ts` owns browser state and persistence.
+- `app/components/Calculator.tsx` renders the main workflow.
+- `app/components/Picker.tsx` renders the scale picker.
 
 ## Features
 
@@ -79,16 +84,9 @@ The engine reads `direction`, `bounds`, `pass`, `rounding`, and `decimals` direc
 GradeForge is a standard Next.js app and stays fully client-side, so it deploys anywhere static or serverless:
 
 ```bash
+npm run lint
+npm run test
 npm run build
-npm start
 ```
 
-Or deploy straight to Vercel (or any static host via `next build` output). There are no secrets, environment variables, or backing services to configure.
-
-## Contributing
-
-Lambdaforge is open source and contributions are welcome. Start with the [contributor guide](https://github.com/lambdaf-org/contributing), and see the org-wide [CONTRIBUTING](https://github.com/lambdaf-org/.github/blob/main/CONTRIBUTING.md) and [Code of Conduct](https://github.com/lambdaf-org/.github/blob/main/CODE_OF_CONDUCT.md).
-
-## License
-
-This repository does not yet include a `LICENSE` file, so default copyright applies for now. A license is coming soon. If you want to use or build on this before then, please open an issue.
+The app has no backend, accounts, telemetry, or upload path.

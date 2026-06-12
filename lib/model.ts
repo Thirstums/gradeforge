@@ -26,18 +26,13 @@ import {
 
 export type Grade = { id: string; label: string; value: string; weight: string };
 export type Subject = { id: string; name: string; weight: string; grades: Grade[] };
-export type View = "subjects" | "quick";
 export type Conv = { variant: "proportional" | "linear"; points: string; max: string; passPct: string };
 
 export interface State {
   systemId: string;
   custom: GradingSystem | null;
-  chosen: boolean;
-  view: View;
   rounding: Rounding;
-  showWork: boolean;
   subjects: Subject[];
-  quick: Grade[];
   conv: Conv;
 }
 
@@ -108,30 +103,12 @@ function seedSubjects(s: GradingSystem): Subject[] {
   ];
 }
 
-function seedQuick(s: GradingSystem): Grade[] {
-  return [0.85, 0.7, 0.6].map((f, i) => ({ id: uid(), label: `Grade ${i + 1}`, value: exampleEntry(s, f), weight: "1" }));
-}
-
-// What changes when the user picks a system for the first time.
-export function freshState(s: GradingSystem): Pick<State, "rounding" | "subjects" | "quick" | "conv"> {
-  return {
-    rounding: s.rounding,
-    subjects: seedSubjects(s),
-    quick: seedQuick(s),
-    conv: { variant: "proportional", points: "", max: String(s.kind === "numeric" ? Math.round(s.max) : 30), passPct: "60" },
-  };
-}
-
 const initialSystem = SYSTEMS[0];
 export const initialState: State = {
   systemId: initialSystem.id,
   custom: null,
-  chosen: false,
-  view: "subjects",
   rounding: initialSystem.rounding,
-  showWork: true,
   subjects: seedSubjects(initialSystem),
-  quick: seedQuick(initialSystem),
   conv: { variant: "proportional", points: "", max: "6", passPct: "60" },
 };
 
@@ -150,7 +127,6 @@ function itemsFrom(sys: GradingSystem, rows: Grade[]): GradeItem[] {
 export interface Results {
   subjectResults: Reckoning[];
   overall: Reckoning;
-  quickResult: Reckoning;
   convResult: Reckoning;
 }
 
@@ -169,13 +145,11 @@ export function derive(state: State, sys: GradingSystem): Results {
     .filter((i) => isFinite(i.value) && isFinite(i.weight) && i.weight > 0);
   const overall = average(overallItems, rounding, b);
 
-  const quickResult = average(itemsFrom(sys, state.quick), rounding, b);
-
   const p = parseFloat(state.conv.points), m = parseFloat(state.conv.max), x = parseFloat(state.conv.passPct);
   const convResult =
     state.conv.variant === "proportional"
       ? pointsProportional(p, m, rounding, b)
       : pointsLinear(p, m, x, rounding, b);
 
-  return { subjectResults, overall, quickResult, convResult };
+  return { subjectResults, overall, convResult };
 }
